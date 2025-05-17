@@ -34,6 +34,22 @@
                     "TitleAlignment": "middle"
                 }
             ]
+        },
+        {
+            "Name": "CounterGlobal",
+            "UUID": "com.ellen-riemens.timetomato.increment-global",
+            "Icon": "imgs/actions/counter/icon",
+            "Tooltip": "Displays a count, which increments by one on press. Increments by 10 if long pressed.",
+            "PropertyInspectorPath": "ui/increment-counter.html",
+            "Controllers": [
+                "Keypad"
+            ],
+            "States": [
+                {
+                    "Image": "imgs/actions/counter/key",
+                    "TitleAlignment": "middle"
+                }
+            ]
         }
     ],
     "Category": "timetomato",
