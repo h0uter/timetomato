@@ -38,6 +38,14 @@ export async function GlobalSettingsChangeHandler(): Promise<void> {
     streamDeck.actions.forEach((action) => {
         if (action.manifestId === INCREMENT_GLOBAL_UUID) {
             action.setTitle(`${globalSettings.count}`);
+            // build your SVG string
+            const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                <rect width="100%" height="100%" fill="#eee"/>
+                <rect width="${globalSettings.count}%" height="100%" fill="#09f"/>
+            </svg>
+            `;
+            action.setImage(`data:image/svg+xml,${encodeURIComponent(svg)}`);
         }
     });
 }
