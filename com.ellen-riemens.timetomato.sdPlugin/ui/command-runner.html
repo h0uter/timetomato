@@ -10,14 +10,26 @@
 <body>
     <!--
         Learn more about property inspector components at https://sdpi-components.dev/docs/components
-    -->
+        -->
     <sdpi-item label="Command">
+        <text>
+            <monospace>Commands are run in a non-login shell</monospace>
+        </text>
         <sdpi-textfield setting="commandToRun" placeholder="Command to run" required>
         </sdpi-textfield>
     </sdpi-item>
 
+    <sdpi-item label="Tip">
+        <text>
+            Use "<code>which YOURCOMMAND</code>" to find the path to the command you want to run (e.g. after running
+            <code>which code </code> you should see something like <code>/usr/local/bin/code</code>), that is the
+            command you should input above.
+        </text>
+    </sdpi-item>
+
+
     <sdpi-item label="Arguments">
-        <sdpi-textfield setting="commandArguments" placeholder="Arguments for the command" required>
+        <sdpi-textfield setting="commandArguments" placeholder="Arguments for the command">
         </sdpi-textfield>
     </sdpi-item>
 
