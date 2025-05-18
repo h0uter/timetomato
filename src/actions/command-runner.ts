@@ -20,20 +20,35 @@ export class CommandRunner extends SingletonAction<Settings> {
         }
 
         let args = settings.commandArguments ?? "";
+        let envVars = settings.environmentVariables ?? "";
 
-        execCommand(cmd, args);
+        execCommand(cmd, args, envVars);
 
         streamDeck.logger.info(`[command runner] Completed running command: ${cmd} ${args}`);
     }
 }
 
 
-function execCommand(cmd: string, args: string) {
+function execCommand(cmd: string, args: string, envVars: string) {
     let combined = cmd + " " + args;
 
     streamDeck.logger.info(`[command runner] Running command: ${combined}`);
 
-    exec(combined, (error, stdout, stderr) => {
+    // Parse envVars string into an object (comma-separated)
+    const env: Record<string, string> = { ...process.env };
+
+    if (envVars && envVars.trim().length > 0) {
+        envVars.split(",").forEach(pair => {
+            const trimmed = pair.trim();
+            if (!trimmed) return;
+            const [key, ...valParts] = trimmed.split("=");
+            if (key && valParts.length > 0) {
+                env[key] = valParts.join("=");
+            }
+        });
+    }
+
+    exec(combined, { env }, (error, stdout, stderr) => {
         if (error) {
             streamDeck.logger.error(`error: ${error.message}`);
             return;
@@ -50,4 +65,5 @@ function execCommand(cmd: string, args: string) {
 type Settings = {
     commandToRun?: string;
     commandArguments?: string;
+    environmentVariables?: string;
 };
