@@ -14,7 +14,7 @@ export class CommandRunner extends SingletonAction<Settings> {
 
         let cmd = settings.commandToRun;
         if (cmd === undefined || cmd.length === 0) {
-            streamDeck.logger.error("No command to run");
+            streamDeck.logger.error("[command runner] No command to run");
             ev.action.showAlert();
             return;
         }
@@ -22,6 +22,8 @@ export class CommandRunner extends SingletonAction<Settings> {
         let args = settings.commandArguments ?? "";
 
         execCommand(cmd, args);
+
+        streamDeck.logger.info(`[command runner] Completed running command: ${cmd} ${args}`);
     }
 }
 
@@ -29,18 +31,18 @@ export class CommandRunner extends SingletonAction<Settings> {
 function execCommand(cmd: string, args: string) {
     let combined = cmd + " " + args;
 
-    streamDeck.logger.info(`Running command: ${combined}`);
+    streamDeck.logger.info(`[command runner] Running command: ${combined}`);
 
     exec(combined, (error, stdout, stderr) => {
         if (error) {
-            streamDeck.logger.info(`error: ${error.message}`);
+            streamDeck.logger.error(`error: ${error.message}`);
             return;
         }
         if (stderr) {
-            streamDeck.logger.info(`stderr: ${stderr}`);
+            streamDeck.logger.error(`stderr: ${stderr}`);
             return;
         }
-        streamDeck.logger.info(`stdout: ${stdout}`);
+        streamDeck.logger.info(`[command runner] stdout: ${stdout}`);
     });
 }
 
