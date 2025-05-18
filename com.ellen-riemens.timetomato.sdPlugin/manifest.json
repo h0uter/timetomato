@@ -70,7 +70,7 @@
         {
             "Name": "Command Runner",
             "UUID": "com.ellen-riemens.timetomato.command-runner",
-            "Icon": "imgs/actions/counter/icon",
+            "Icon": "imgs/actions/command_runner/icon",
             "PropertyInspectorPath": "ui/command-runner.html",
             "Tooltip": "Runs a command if pressed.",
             "Controllers": [
@@ -78,7 +78,7 @@
             ],
             "States": [
                 {
-                    "Image": "imgs/actions/counter/key",
+                    "Image": "imgs/actions/command_runner/key",
                     "TitleAlignment": "middle"
                 }
             ]
