@@ -5,10 +5,6 @@ import { exec } from "child_process";
 @action({ UUID: "com.ellen-riemens.timetomato.command-runner" })
 export class CommandRunner extends SingletonAction<Settings> {
 
-    override onWillAppear(ev: WillAppearEvent<Settings>): void | Promise<void> {
-        return ev.action.setTitle(`cmd \n Runner`);
-    }
-
     override async onKeyDown(ev: KeyDownEvent<Settings>): Promise<void> {
         const { settings } = ev.payload;
 
@@ -22,14 +18,24 @@ export class CommandRunner extends SingletonAction<Settings> {
         let args = settings.commandArguments ?? "";
         let envVars = settings.environmentVariables ?? "";
 
-        execCommand(cmd, args, envVars);
+        function alert(error: boolean) {
+            if (error) {
+                streamDeck.logger.error("[command runner] Error running command");
+                ev.action.showAlert();
+            } else {
+                streamDeck.logger.info("[command runner] Command completed successfully");
+                ev.action.showOk();
+            }
+        }
+
+        execCommand(cmd, args, envVars, alert);
 
         streamDeck.logger.info(`[command runner] Completed running command: ${cmd} ${args}`);
     }
 }
 
 
-function execCommand(cmd: string, args: string, envVars: string) {
+function execCommand(cmd: string, args: string, envVars: string, alert: (error: boolean) => void): void {
     let combined = cmd + " " + args;
 
     streamDeck.logger.info(`[command runner] Running command: ${combined}`);
@@ -52,14 +58,17 @@ function execCommand(cmd: string, args: string, envVars: string) {
 
     exec(combined, { env }, (error, stdout, stderr) => {
         if (error) {
-            streamDeck.logger.error(`error: ${error.message}`);
+            streamDeck.logger.error(`[command runner] error: ${error.message}`);
+            alert(true);
             return;
         }
         if (stderr) {
-            streamDeck.logger.error(`stderr: ${stderr}`);
+            streamDeck.logger.error(`[command runner] stderr: ${stderr}`);
+            alert(true);
             return;
         }
         streamDeck.logger.info(`[command runner] stdout: ${stdout}`);
+        alert(false);
     });
 }
 
