@@ -26,6 +26,8 @@ export class IncrementCounterReset extends SingletonAction<CounterSettings> {
         settings.keyDownTime = getTimeSecs();
 
         await streamDeck.settings.setGlobalSettings(settings);
+        streamDeck.logger.info(`Key down`);
+
     }
 
     override async onKeyUp(ev: KeyUpEvent<CounterSettings>): Promise<void> {
@@ -63,13 +65,13 @@ export async function resetGlobalSettingsChangeHandler(): Promise<void> {
     // for each action, if it is this one, update the title with the current count if the settings have changed.
     streamDeck.actions.forEach(async (action) => {
         if (action.manifestId === ACTION_UUID) {
-            action.setTitle(`${globalSettings.count}`);
+            await action.setTitle(`${globalSettings.count}`);
             // build your SVG string
             const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
                 <rect width="100%" height="100%" fill="#eee"/>
                 <rect width="${globalSettings.count}%" height="100%" fill="#09f"/>
-            </svg>
+                </svg>
             `;
 
             // is setting the image takes some time, and we press te button too fast we can get weird behavior.
