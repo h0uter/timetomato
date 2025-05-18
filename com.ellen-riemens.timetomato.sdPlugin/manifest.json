@@ -39,7 +39,23 @@
             "Name": "CounterGlobal",
             "UUID": "com.ellen-riemens.timetomato.increment-global",
             "Icon": "imgs/actions/counter/icon",
-            "Tooltip": "Displays a count, which increments by one on press. Increments by 10 if long pressed.",
+            "Tooltip": "Displays a count, which increments by one on press. and shows a progress bar.",
+            "PropertyInspectorPath": "ui/increment-counter.html",
+            "Controllers": [
+                "Keypad"
+            ],
+            "States": [
+                {
+                    "Image": "imgs/actions/counter/key",
+                    "TitleAlignment": "middle"
+                }
+            ]
+        },
+        {
+            "Name": "CounterReset",
+            "UUID": "com.ellen-riemens.timetomato.increment-reset",
+            "Icon": "imgs/actions/counter/icon",
+            "Tooltip": "Displays a count, which increments by one on press. and shows a progress bar. Resets if long pressed.",
             "PropertyInspectorPath": "ui/increment-counter.html",
             "Controllers": [
                 "Keypad"
