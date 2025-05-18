@@ -1,4 +1,4 @@
-import streamDeck, { action, KeyDownEvent, SingletonAction, WillAppearEvent } from "@elgato/streamdeck";
+import streamDeck, { action, KeyDownEvent, SingletonAction } from "@elgato/streamdeck";
 import { exec } from "child_process";
 
 
@@ -17,6 +17,7 @@ export class CommandRunner extends SingletonAction<Settings> {
 
         let args = settings.commandArguments ?? "";
         let envVars = settings.environmentVariables ?? "";
+        let cwd = settings.workingDirectory ?? undefined;
 
         function alert(error: boolean) {
             if (error) {
@@ -28,14 +29,20 @@ export class CommandRunner extends SingletonAction<Settings> {
             }
         }
 
-        execCommand(cmd, args, envVars, alert);
+        execCommand(cmd, args, envVars, cwd, alert);
 
         streamDeck.logger.info(`[command runner] Completed running command: ${cmd} ${args}`);
     }
 }
 
 
-function execCommand(cmd: string, args: string, envVars: string, alert: (error: boolean) => void): void {
+function execCommand(
+    cmd: string,
+    args: string,
+    envVars: string,
+    cwd: string | undefined,
+    alert: (error: boolean) => void
+): void {
     let combined = cmd + " " + args;
 
     streamDeck.logger.info(`[command runner] Running command: ${combined}`);
@@ -56,7 +63,13 @@ function execCommand(cmd: string, args: string, envVars: string, alert: (error: 
         });
     }
 
-    exec(combined, { env }, (error, stdout, stderr) => {
+    if (cwd === undefined) {
+        cwd = process.cwd();
+    } else {
+        streamDeck.logger.info(`[command runner] Using working directory: ${cwd}`);
+    }
+
+    exec(combined, { env, cwd }, (error, stdout, stderr) => {
         if (error) {
             streamDeck.logger.error(`[command runner] error: ${error.message}`);
             alert(true);
@@ -77,4 +90,5 @@ type Settings = {
     commandToRun?: string;
     commandArguments?: string;
     environmentVariables?: string;
+    workingDirectory?: string;
 };
