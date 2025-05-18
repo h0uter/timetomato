@@ -37,7 +37,7 @@ export class IncrementCounterReset extends SingletonAction<CounterSettings> {
 
         settings.incrementBy ??= 1;
         settings.keyDownTime ??= getTimeSecs();
-        streamDeck.logger.info();
+
         let duration = getTimeSecs() - settings.keyDownTime;
         streamDeck.logger.info(`Key was held down for ${duration} seconds`);
         if (duration >= LONGPRESS_DURATION) {
