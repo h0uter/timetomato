@@ -1,6 +1,13 @@
 import streamDeck, { action, KeyDownEvent, SingletonAction } from "@elgato/streamdeck";
 import { exec } from "child_process";
 
+type Settings = {
+    commandToRun?: string;
+    commandArguments?: string;
+    environmentVariables?: string;
+    workingDirectory?: string;
+};
+
 
 @action({ UUID: "com.ellen-riemens.timetomato.command-runner" })
 export class CommandRunner extends SingletonAction<Settings> {
@@ -16,7 +23,7 @@ export class CommandRunner extends SingletonAction<Settings> {
         }
 
         let args = settings.commandArguments ?? "";
-        let envVars = settings.environmentVariables ?? "";
+        let envVars = settings.environmentVariables ?? undefined;
         let cwd = settings.workingDirectory ?? undefined;
 
         function alert(error: boolean) {
@@ -35,41 +42,29 @@ export class CommandRunner extends SingletonAction<Settings> {
     }
 }
 
-
 function execCommand(
     cmd: string,
     args: string,
-    envVars: string,
+    envVars: string | undefined,
     cwd: string | undefined,
     alert: (error: boolean) => void
 ): void {
     let combined = cmd + " " + args;
+    let execOptions = {};
 
     streamDeck.logger.info(`[command runner] Running command: ${combined}`);
 
-    // Parse envVars string into an object (comma-separated)
-    const env: Record<string, string> = Object.fromEntries(
-        Object.entries(process.env).filter(([_, v]) => typeof v === "string") as [string, string][]
-    );
+    if (envVars !== undefined) {
+        const env = parseEnvVars(envVars);
 
-    if (envVars && envVars.trim().length > 0) {
-        envVars.split(",").forEach(pair => {
-            const trimmed = pair.trim();
-            if (!trimmed) return;
-            const [key, ...valParts] = trimmed.split("=");
-            if (key && valParts.length > 0) {
-                env[key] = valParts.join("=");
-            }
-        });
+        execOptions = { ...execOptions, env };
     }
 
-    if (cwd === undefined) {
-        cwd = process.cwd();
-    } else {
-        streamDeck.logger.info(`[command runner] Using working directory: ${cwd}`);
+    if (cwd !== undefined) {
+        execOptions = { ...execOptions, cwd };
     }
 
-    exec(combined, { env, cwd }, (error, stdout, stderr) => {
+    exec(combined, execOptions, (error, stdout, stderr) => {
         if (error) {
             streamDeck.logger.error(`[command runner] error: ${error.message}`);
             alert(true);
@@ -85,10 +80,22 @@ function execCommand(
     });
 }
 
+function parseEnvVars(envVars: string): Record<string, string> {
+    // Parse envVars string into an object (comma-separated)
+    // Example: "VAR1=value1,VAR2=value2" => { VAR1: "value1", VAR2: "value2" }
+    const env: Record<string, string> = Object.fromEntries(
+        Object.entries(process.env).filter(([_, v]) => typeof v === "string") as [string, string][]
+    );
 
-type Settings = {
-    commandToRun?: string;
-    commandArguments?: string;
-    environmentVariables?: string;
-    workingDirectory?: string;
-};
+    if (envVars && envVars.trim().length > 0) {
+        envVars.split(",").forEach(pair => {
+            const trimmed = pair.trim();
+            if (!trimmed) return;
+            const [key, ...valParts] = trimmed.split("=");
+            if (key && valParts.length > 0) {
+                env[key] = valParts.join("=");
+            }
+        });
+    }
+    return env;
+}
