@@ -19,13 +19,19 @@ export class CommandRunner extends SingletonAction<Settings> {
             return;
         }
 
-        execCommand(settings.commandToRun!);
+        let args = settings.commandArguments ?? "";
+
+        execCommand(cmd, args);
     }
 }
 
 
-function execCommand(cmd: string) {
-    exec(cmd, (error, stdout, stderr) => {
+function execCommand(cmd: string, args: string) {
+    let combined = cmd + " " + args;
+
+    streamDeck.logger.info(`Running command: ${combined}`);
+
+    exec(combined, (error, stdout, stderr) => {
         if (error) {
             streamDeck.logger.info(`error: ${error.message}`);
             return;
@@ -41,4 +47,5 @@ function execCommand(cmd: string) {
 
 type Settings = {
     commandToRun?: string;
+    commandArguments?: string;
 };
