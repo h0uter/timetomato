@@ -79,7 +79,7 @@
             "States": [
                 {
                     "Image": "imgs/actions/command_runner/key",
-                    "TitleAlignment": "middle"
+                    "TitleAlignment": "bottom"
                 }
             ]
         }
