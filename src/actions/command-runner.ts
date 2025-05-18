@@ -1,23 +1,20 @@
 import streamDeck, { action, KeyDownEvent, SingletonAction, WillAppearEvent } from "@elgato/streamdeck";
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 
-/**
- * An example action class that displays a count that increments by one each time the button is pressed.
- */
+
 @action({ UUID: "com.ellen-riemens.timetomato.command-runner" })
-export class CommandRunner extends SingletonAction<CounterSettings> {
+export class CommandRunner extends SingletonAction<Settings> {
 
-    override onWillAppear(ev: WillAppearEvent<CounterSettings>): void | Promise<void> {
+    override onWillAppear(ev: WillAppearEvent<Settings>): void | Promise<void> {
         return ev.action.setTitle(`cmd \n Runner`);
     }
 
-    override async onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
-        // Update the count from the settings.
+    override async onKeyDown(ev: KeyDownEvent<Settings>): Promise<void> {
         const { settings } = ev.payload;
 
         let cmd = settings.commandToRun;
         if (cmd === undefined || cmd.length === 0) {
-            streamDeck.logger.info("No command to run");
+            streamDeck.logger.error("No command to run");
             ev.action.showAlert();
             return;
         }
@@ -41,9 +38,7 @@ function execCommand(cmd: string) {
     });
 }
 
-/**
- * Settings for {@link IncrementCounter}.
- */
-type CounterSettings = {
+
+type Settings = {
     commandToRun?: string;
 };
