@@ -66,6 +66,22 @@
                     "TitleAlignment": "middle"
                 }
             ]
+        },
+        {
+            "Name": "Command Runner",
+            "UUID": "com.ellen-riemens.timetomato.command-runner",
+            "Icon": "imgs/actions/counter/icon",
+            "PropertyInspectorPath": "ui/command-runner.html",
+            "Tooltip": "Runs a command if pressed.",
+            "Controllers": [
+                "Keypad"
+            ],
+            "States": [
+                {
+                    "Image": "imgs/actions/counter/key",
+                    "TitleAlignment": "middle"
+                }
+            ]
         }
     ],
     "Category": "timetomato",
