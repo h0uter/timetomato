@@ -35,7 +35,9 @@ function execCommand(cmd: string, args: string, envVars: string) {
     streamDeck.logger.info(`[command runner] Running command: ${combined}`);
 
     // Parse envVars string into an object (comma-separated)
-    const env: Record<string, string> = { ...process.env };
+    const env: Record<string, string> = Object.fromEntries(
+        Object.entries(process.env).filter(([_, v]) => typeof v === "string") as [string, string][]
+    );
 
     if (envVars && envVars.trim().length > 0) {
         envVars.split(",").forEach(pair => {
